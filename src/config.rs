@@ -116,31 +116,37 @@ impl Config {
     pub fn config_path() -> Result<PathBuf> {
         let config_dir = dirs::config_dir()
             .ok_or_else(|| anyhow::anyhow!("Could not determine config directory"))?;
-        Ok(config_dir.join("git-search").join("config.toml"))
+        Ok(config_dir.join("repo_search").join("config.toml"))
     }
 
     /// Migrate legacy top-level provider configs to the providers map
     fn migrate_legacy_providers(&mut self) {
         if let Some(legacy) = self.github.take() {
-            self.providers.entry("github".to_string()).or_insert(ProviderEntry {
-                provider_type: Some(ProviderType::Github),
-                token: legacy.token,
-                url: legacy.url,
-            });
+            self.providers
+                .entry("github".to_string())
+                .or_insert(ProviderEntry {
+                    provider_type: Some(ProviderType::Github),
+                    token: legacy.token,
+                    url: legacy.url,
+                });
         }
         if let Some(legacy) = self.gitlab.take() {
-            self.providers.entry("gitlab".to_string()).or_insert(ProviderEntry {
-                provider_type: Some(ProviderType::Gitlab),
-                token: legacy.token,
-                url: legacy.url,
-            });
+            self.providers
+                .entry("gitlab".to_string())
+                .or_insert(ProviderEntry {
+                    provider_type: Some(ProviderType::Gitlab),
+                    token: legacy.token,
+                    url: legacy.url,
+                });
         }
         if let Some(legacy) = self.bitbucket.take() {
-            self.providers.entry("bitbucket".to_string()).or_insert(ProviderEntry {
-                provider_type: Some(ProviderType::Bitbucket),
-                token: legacy.token,
-                url: legacy.url,
-            });
+            self.providers
+                .entry("bitbucket".to_string())
+                .or_insert(ProviderEntry {
+                    provider_type: Some(ProviderType::Bitbucket),
+                    token: legacy.token,
+                    url: legacy.url,
+                });
         }
     }
 
@@ -214,14 +220,18 @@ impl Config {
     pub fn resolve_provider(&self, name: &str) -> Option<ResolvedProvider> {
         // Check if it's a configured provider
         if let Some(entry) = self.providers.get(name) {
-            let provider_type = entry.provider_type
+            let provider_type = entry
+                .provider_type
                 .or_else(|| ProviderType::from_name(name))?;
 
             return Some(ResolvedProvider {
                 name: name.to_string(),
                 provider_type,
                 token: entry.token.clone(),
-                url: entry.url.clone().unwrap_or_else(|| provider_type.default_url().to_string()),
+                url: entry
+                    .url
+                    .clone()
+                    .unwrap_or_else(|| provider_type.default_url().to_string()),
             });
         }
 
@@ -254,7 +264,11 @@ impl Config {
     /// Get default provider names to search
     pub fn default_providers(&self) -> Vec<String> {
         self.defaults.providers.clone().unwrap_or_else(|| {
-            vec!["github".to_string(), "gitlab".to_string(), "bitbucket".to_string()]
+            vec![
+                "github".to_string(),
+                "gitlab".to_string(),
+                "bitbucket".to_string(),
+            ]
         })
     }
 
@@ -273,11 +287,26 @@ mod tests {
 
     #[test]
     fn test_provider_type_from_name() {
-        assert_eq!(ProviderType::from_name("github"), Some(ProviderType::Github));
-        assert_eq!(ProviderType::from_name("GitHub"), Some(ProviderType::Github));
-        assert_eq!(ProviderType::from_name("GITHUB"), Some(ProviderType::Github));
-        assert_eq!(ProviderType::from_name("gitlab"), Some(ProviderType::Gitlab));
-        assert_eq!(ProviderType::from_name("bitbucket"), Some(ProviderType::Bitbucket));
+        assert_eq!(
+            ProviderType::from_name("github"),
+            Some(ProviderType::Github)
+        );
+        assert_eq!(
+            ProviderType::from_name("GitHub"),
+            Some(ProviderType::Github)
+        );
+        assert_eq!(
+            ProviderType::from_name("GITHUB"),
+            Some(ProviderType::Github)
+        );
+        assert_eq!(
+            ProviderType::from_name("gitlab"),
+            Some(ProviderType::Gitlab)
+        );
+        assert_eq!(
+            ProviderType::from_name("bitbucket"),
+            Some(ProviderType::Bitbucket)
+        );
         assert_eq!(ProviderType::from_name("unknown"), None);
         assert_eq!(ProviderType::from_name("work-gitlab"), None);
     }
@@ -286,7 +315,10 @@ mod tests {
     fn test_provider_type_default_url() {
         assert_eq!(ProviderType::Github.default_url(), "https://api.github.com");
         assert_eq!(ProviderType::Gitlab.default_url(), "https://gitlab.com");
-        assert_eq!(ProviderType::Bitbucket.default_url(), "https://api.bitbucket.org/2.0");
+        assert_eq!(
+            ProviderType::Bitbucket.default_url(),
+            "https://api.bitbucket.org/2.0"
+        );
     }
 
     #[test]
@@ -305,7 +337,10 @@ mod tests {
             limit = 20
         "#;
         let config = Config::from_toml(toml).unwrap();
-        assert_eq!(config.defaults.providers, Some(vec!["github".to_string(), "gitlab".to_string()]));
+        assert_eq!(
+            config.defaults.providers,
+            Some(vec!["github".to_string(), "gitlab".to_string()])
+        );
         assert_eq!(config.defaults.limit, Some(20));
     }
 
@@ -352,7 +387,10 @@ mod tests {
 
         let github = &config.providers["github"];
         assert_eq!(github.token, Some("legacy-github-token".to_string()));
-        assert_eq!(github.url, Some("https://github.enterprise.com".to_string()));
+        assert_eq!(
+            github.url,
+            Some("https://github.enterprise.com".to_string())
+        );
     }
 
     #[test]
@@ -448,7 +486,10 @@ mod tests {
         "#;
         let config = Config::from_toml(toml).unwrap();
 
-        assert_eq!(config.default_providers(), vec!["github".to_string(), "work-gitlab".to_string()]);
+        assert_eq!(
+            config.default_providers(),
+            vec!["github".to_string(), "work-gitlab".to_string()]
+        );
     }
 
     #[test]
@@ -457,7 +498,11 @@ mod tests {
 
         assert_eq!(
             config.default_providers(),
-            vec!["github".to_string(), "gitlab".to_string(), "bitbucket".to_string()]
+            vec![
+                "github".to_string(),
+                "gitlab".to_string(),
+                "bitbucket".to_string()
+            ]
         );
     }
 

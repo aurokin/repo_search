@@ -1,4 +1,4 @@
-# Agent Guidelines for git-search
+# Agent Guidelines for repo_search
 
 ## Architecture
 

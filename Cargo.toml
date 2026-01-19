@@ -1,9 +1,9 @@
 [package]
-name = "git-search"
+name = "repo_search"
 version = "0.1.0"
 edition = "2021"
 description = "CLI tool for searching git repositories across GitHub, GitLab, and Bitbucket"
-authors = ["git-search contributors"]
+authors = ["repo_search contributors"]
 
 [dependencies]
 clap = { version = "4", features = ["derive"] }

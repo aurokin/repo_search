@@ -59,9 +59,7 @@ impl BitbucketProvider {
     }
 
     fn build_request(&self, url: &str) -> reqwest::RequestBuilder {
-        let mut request = self.client
-            .get(url)
-            .header("User-Agent", "git-search-cli");
+        let mut request = self.client.get(url).header("User-Agent", "repo_search_cli");
 
         if let Some(token) = &self.token {
             request = request.header("Authorization", format!("Bearer {}", token));
@@ -71,14 +69,17 @@ impl BitbucketProvider {
     }
 
     async fn get_username(&self) -> Result<String> {
-        let token = self.token.as_ref()
+        let token = self
+            .token
+            .as_ref()
             .ok_or_else(|| anyhow::anyhow!("Authentication required to get username"))?;
 
         let url = format!("{}/user", self.base_url);
-        let response = self.client
+        let response = self
+            .client
             .get(&url)
             .header("Authorization", format!("Bearer {}", token))
-            .header("User-Agent", "git-search-cli")
+            .header("User-Agent", "repo_search_cli")
             .send()
             .await
             .context("Failed to fetch Bitbucket user")?;
@@ -119,7 +120,8 @@ impl Provider for BitbucketProvider {
             )
         };
 
-        let response = self.build_request(&url)
+        let response = self
+            .build_request(&url)
             .send()
             .await
             .context("Failed to search Bitbucket repositories")?;
@@ -130,7 +132,9 @@ impl Provider for BitbucketProvider {
             anyhow::bail!("Bitbucket API error ({}): {}", status, body);
         }
 
-        let bitbucket_response: BitbucketResponse = response.json().await
+        let bitbucket_response: BitbucketResponse = response
+            .json()
+            .await
             .context("Failed to parse Bitbucket response")?;
 
         let display_name = self.display_name.clone();

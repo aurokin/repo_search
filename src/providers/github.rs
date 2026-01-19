@@ -49,14 +49,17 @@ impl GitHubProvider {
     }
 
     async fn get_username(&self) -> Result<String> {
-        let token = self.token.as_ref()
+        let token = self
+            .token
+            .as_ref()
             .ok_or_else(|| anyhow::anyhow!("Authentication required to get username"))?;
 
         let url = format!("{}/user", self.base_url);
-        let response = self.client
+        let response = self
+            .client
             .get(&url)
             .header("Authorization", format!("Bearer {}", token))
-            .header("User-Agent", "git-search-cli")
+            .header("User-Agent", "repo_search_cli")
             .header("Accept", "application/vnd.github+json")
             .send()
             .await
@@ -71,9 +74,10 @@ impl GitHubProvider {
     }
 
     fn build_request(&self, url: &str) -> reqwest::RequestBuilder {
-        let mut request = self.client
+        let mut request = self
+            .client
             .get(url)
-            .header("User-Agent", "git-search-cli")
+            .header("User-Agent", "repo_search_cli")
             .header("Accept", "application/vnd.github+json");
 
         if let Some(token) = &self.token {
@@ -101,7 +105,8 @@ impl Provider for GitHubProvider {
             limit
         );
 
-        let response = self.build_request(&url)
+        let response = self
+            .build_request(&url)
             .send()
             .await
             .context("Failed to search GitHub repositories")?;
@@ -112,7 +117,9 @@ impl Provider for GitHubProvider {
             anyhow::bail!("GitHub API error ({}): {}", status, body);
         }
 
-        let search_response: SearchResponse = response.json().await
+        let search_response: SearchResponse = response
+            .json()
+            .await
             .context("Failed to parse GitHub response")?;
 
         let display_name = self.display_name.clone();

@@ -1,8 +1,11 @@
 use clap::Parser;
 
 #[derive(Parser, Debug)]
-#[command(name = "git-search")]
-#[command(version, about = "Search git repositories across GitHub, GitLab, and Bitbucket")]
+#[command(name = "repo_search")]
+#[command(
+    version,
+    about = "Search git repositories across GitHub, GitLab, and Bitbucket"
+)]
 pub struct Args {
     /// Search query (required unless using --list-providers)
     pub query: Option<String>,

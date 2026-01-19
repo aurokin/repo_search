@@ -21,7 +21,11 @@ pub struct Repository {
 }
 
 fn display_bool(b: &bool) -> String {
-    if *b { "Yes".to_string() } else { "No".to_string() }
+    if *b {
+        "Yes".to_string()
+    } else {
+        "No".to_string()
+    }
 }
 
 #[derive(Debug, Clone, Serialize)]

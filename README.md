@@ -1,4 +1,4 @@
-# git-search
+# repo_search
 
 A fast CLI tool for searching git repositories across GitHub, GitLab, and Bitbucket.
 
@@ -17,46 +17,46 @@ A fast CLI tool for searching git repositories across GitHub, GitLab, and Bitbuc
 ### From Source
 
 ```bash
-git clone https://github.com/yourusername/git-search.git
-cd git-search
+git clone https://github.com/yourusername/repo_search.git
+cd repo_search
 cargo build --release
 ```
 
-The binary will be at `./target/release/git-search`.
+The binary will be at `./target/release/repo_search`.
 
 ## Usage
 
 ```bash
 # Search all default providers
-git-search "rust cli"
+repo_search "rust cli"
 
 # Search specific provider(s)
-git-search -p github "rust cli"
-git-search -p github -p gitlab "rust cli"
+repo_search -p github "rust cli"
+repo_search -p github -p gitlab "rust cli"
 
 # Search a custom provider by name
-git-search -p work-gitlab "internal project"
+repo_search -p work-gitlab "internal project"
 
 # Search all configured providers
-git-search -p all "query"
+repo_search -p all "query"
 
 # Only show your own repositories
-git-search --mine "my project"
+repo_search --mine "my project"
 
 # Limit results per provider
-git-search -l 5 "query"
+repo_search -l 5 "query"
 
 # Output as JSON
-git-search --json "query"
+repo_search --json "query"
 
 # List all configured providers
-git-search --list-providers
+repo_search --list-providers
 ```
 
 ### Options
 
 ```
-Usage: git-search [OPTIONS] [QUERY]
+Usage: repo_search [OPTIONS] [QUERY]
 
 Arguments:
   [QUERY]  Search query (required unless using --list-providers)
@@ -74,7 +74,7 @@ Options:
 
 ## Configuration
 
-Configuration file location: `~/.config/git-search/config.toml`
+Configuration file location: `~/.config/repo_search/config.toml`
 
 ### Basic Configuration
 
@@ -174,7 +174,7 @@ Found 3 repositories:
 ### JSON
 
 ```bash
-git-search --json "rust"
+repo_search --json "rust"
 ```
 
 ```json
@@ -199,7 +199,7 @@ git-search --json "rust"
 ### Search across work and personal GitLab instances
 
 ```toml
-# ~/.config/git-search/config.toml
+# ~/.config/repo_search/config.toml
 [defaults]
 providers = ["work-gitlab", "personal-gitlab"]
 
@@ -216,16 +216,16 @@ token = "personal-token"
 
 ```bash
 # Search both instances
-git-search "my project"
+repo_search "my project"
 
 # Search only work GitLab
-git-search -p work-gitlab "internal"
+repo_search -p work-gitlab "internal"
 ```
 
 ### Quick search on GitHub only
 
 ```bash
-GITHUB_TOKEN=ghp_xxx git-search -p github "awesome project"
+GITHUB_TOKEN=ghp_xxx repo_search -p github "awesome project"
 ```
 
 ## Development

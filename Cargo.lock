@@ -292,24 +292,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "git-search"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "async-trait",
- "clap",
- "dirs",
- "reqwest",
- "serde",
- "serde_json",
- "tabled",
- "thiserror",
- "tokio",
- "toml",
- "urlencoding",
-]
-
-[[package]]
 name = "h2"
 version = "0.3.27"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -609,6 +591,24 @@ dependencies = [
  "getrandom",
  "libredox",
  "thiserror",
+]
+
+[[package]]
+name = "repo_search"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "clap",
+ "dirs",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "tabled",
+ "thiserror",
+ "tokio",
+ "toml",
+ "urlencoding",
 ]
 
 [[package]]

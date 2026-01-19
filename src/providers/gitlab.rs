@@ -39,9 +39,7 @@ impl GitLabProvider {
     }
 
     fn build_request(&self, url: &str) -> reqwest::RequestBuilder {
-        let mut request = self.client
-            .get(url)
-            .header("User-Agent", "git-search-cli");
+        let mut request = self.client.get(url).header("User-Agent", "repo_search_cli");
 
         if let Some(token) = &self.token {
             request = request.header("PRIVATE-TOKEN", token);
@@ -65,7 +63,8 @@ impl Provider for GitLabProvider {
             url.push_str("&owned=true");
         }
 
-        let response = self.build_request(&url)
+        let response = self
+            .build_request(&url)
             .send()
             .await
             .context("Failed to search GitLab projects")?;
@@ -76,7 +75,9 @@ impl Provider for GitLabProvider {
             anyhow::bail!("GitLab API error ({}): {}", status, body);
         }
 
-        let projects: Vec<GitLabProject> = response.json().await
+        let projects: Vec<GitLabProject> = response
+            .json()
+            .await
             .context("Failed to parse GitLab response")?;
 
         let display_name = self.display_name.clone();

@@ -28,7 +28,11 @@ async fn main() -> Result<()> {
                     ProviderType::Gitlab => "gitlab",
                     ProviderType::Bitbucket => "bitbucket",
                 };
-                let auth = if resolved.token.is_some() { " (authenticated)" } else { "" };
+                let auth = if resolved.token.is_some() {
+                    " (authenticated)"
+                } else {
+                    ""
+                };
                 println!("  {} [{}] -> {}{}", name, type_str, resolved.url, auth);
             }
         }
@@ -36,7 +40,8 @@ async fn main() -> Result<()> {
     }
 
     // Resolve limit: CLI > config > default
-    let limit = args.limit
+    let limit = args
+        .limit
         .or(config.defaults.limit)
         .unwrap_or(DEFAULT_LIMIT);
 
@@ -45,7 +50,7 @@ async fn main() -> Result<()> {
         Some(q) => q,
         None => {
             eprintln!("Error: Search query is required");
-            eprintln!("Usage: git-search <QUERY>");
+            eprintln!("Usage: repo_search <QUERY>");
             std::process::exit(1);
         }
     };
