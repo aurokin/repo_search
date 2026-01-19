@@ -1,0 +1,20 @@
+[package]
+name = "git-search"
+version = "0.1.0"
+edition = "2021"
+description = "CLI tool for searching git repositories across GitHub, GitLab, and Bitbucket"
+authors = ["git-search contributors"]
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+reqwest = { version = "0.11", features = ["json", "rustls-tls"], default-features = false }
+tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tabled = "0.14"
+dirs = "5"
+toml = "0.8"
+anyhow = "1"
+thiserror = "1"
+async-trait = "0.1"
+urlencoding = "2"
