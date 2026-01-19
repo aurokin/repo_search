@@ -23,6 +23,10 @@ pub struct Args {
     #[arg(short, long)]
     pub mine: bool,
 
+    /// Only show repositories owned by this user/org
+    #[arg(long)]
+    pub owner: Option<String>,
+
     /// Maximum results per provider (default: 10, or from config)
     #[arg(short, long)]
     pub limit: Option<usize>,

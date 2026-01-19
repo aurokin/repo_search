@@ -90,10 +90,18 @@ impl GitHubProvider {
 
 #[async_trait]
 impl Provider for GitHubProvider {
-    async fn search(&self, query: &str, mine_only: bool, limit: usize) -> Result<Vec<Repository>> {
+    async fn search(
+        &self,
+        query: &str,
+        mine_only: bool,
+        owner: Option<&str>,
+        limit: usize,
+    ) -> Result<Vec<Repository>> {
         let search_query = if mine_only {
             let username = self.get_username().await?;
             format!("{} user:{}", query, username)
+        } else if let Some(owner) = owner {
+            format!("{} user:{}", query, owner)
         } else {
             query.to_string()
         };

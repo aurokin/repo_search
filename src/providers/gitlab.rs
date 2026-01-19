@@ -51,7 +51,13 @@ impl GitLabProvider {
 
 #[async_trait]
 impl Provider for GitLabProvider {
-    async fn search(&self, query: &str, mine_only: bool, limit: usize) -> Result<Vec<Repository>> {
+    async fn search(
+        &self,
+        query: &str,
+        mine_only: bool,
+        owner: Option<&str>,
+        limit: usize,
+    ) -> Result<Vec<Repository>> {
         let mut url = format!(
             "{}/api/v4/projects?search={}&per_page={}",
             self.base_url,
@@ -83,6 +89,11 @@ impl Provider for GitLabProvider {
         let display_name = self.display_name.clone();
         let repos = projects
             .into_iter()
+            .filter(|project| {
+                owner.map_or(true, |owner| {
+                    project.namespace.name.eq_ignore_ascii_case(owner)
+                })
+            })
             .map(|project| Repository {
                 name: project.name,
                 full_name: project.path_with_namespace.clone(),

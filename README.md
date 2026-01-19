@@ -8,6 +8,7 @@ A fast CLI tool for searching git repositories across GitHub, GitLab, and Bitbuc
 - Support for GitHub, GitLab, and Bitbucket (including self-hosted instances)
 - Define custom provider instances (e.g., work GitLab, personal Bitbucket)
 - Filter to only your own repositories with `--mine`
+- Filter to a specific owner with `--owner`
 - Show private repositories when authenticated
 - Table or JSON output formats
 - Concurrent searches across all providers
@@ -43,6 +44,9 @@ repo_search -p all "query"
 # Only show your own repositories
 repo_search --mine "my project"
 
+# Filter by owner
+repo_search --owner rust-lang "rust"
+
 # Limit results per provider
 repo_search -l 5 "query"
 
@@ -65,6 +69,7 @@ Options:
   -p, --provider <PROVIDER>  Provider(s) to search (can specify multiple)
   -u, --url <URL>            Custom instance URL (overrides provider URL)
   -m, --mine                 Only show repositories you own
+      --owner <OWNER>        Only show repositories owned by this user/org
   -l, --limit <LIMIT>        Maximum results per provider
       --json                 Output as JSON
       --list-providers       List all configured providers and exit

@@ -39,6 +39,11 @@ async fn main() -> Result<()> {
         return Ok(());
     }
 
+    if args.mine && args.owner.is_some() {
+        eprintln!("Error: --owner and --mine cannot be used together");
+        std::process::exit(1);
+    }
+
     // Resolve limit: CLI > config > default
     let limit = args
         .limit
@@ -81,7 +86,14 @@ async fn main() -> Result<()> {
     }
 
     // Execute searches
-    let (repos, errors) = execute_searches(&resolved_providers, &query, args.mine, limit).await;
+    let (repos, errors) = execute_searches(
+        &resolved_providers,
+        &query,
+        args.mine,
+        args.owner.as_deref(),
+        limit,
+    )
+    .await;
 
     // Print warnings
     if !errors.is_empty() && !args.json {
@@ -122,6 +134,7 @@ async fn execute_searches(
     providers: &[ResolvedProvider],
     query: &str,
     mine_only: bool,
+    owner: Option<&str>,
     limit: usize,
 ) -> (Vec<Repository>, Vec<String>) {
     use tokio::task::JoinSet;
@@ -134,20 +147,21 @@ async fn execute_searches(
         let token = provider.token.clone();
         let provider_type = provider.provider_type;
         let query = query.to_string();
+        let owner = owner.map(|value| value.to_string());
 
         join_set.spawn(async move {
             let result: Result<Vec<Repository>> = match provider_type {
                 ProviderType::Github => {
                     let p = GitHubProvider::new(url, token, name.clone());
-                    p.search(&query, mine_only, limit).await
+                    p.search(&query, mine_only, owner.as_deref(), limit).await
                 }
                 ProviderType::Gitlab => {
                     let p = GitLabProvider::new(url, token, name.clone());
-                    p.search(&query, mine_only, limit).await
+                    p.search(&query, mine_only, owner.as_deref(), limit).await
                 }
                 ProviderType::Bitbucket => {
                     let p = BitbucketProvider::new(url, token, name.clone());
-                    p.search(&query, mine_only, limit).await
+                    p.search(&query, mine_only, owner.as_deref(), limit).await
                 }
             };
             (name, result)

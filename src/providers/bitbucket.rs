@@ -95,19 +95,33 @@ impl BitbucketProvider {
 
 #[async_trait]
 impl Provider for BitbucketProvider {
-    async fn search(&self, query: &str, mine_only: bool, limit: usize) -> Result<Vec<Repository>> {
+    async fn search(
+        &self,
+        query: &str,
+        mine_only: bool,
+        owner: Option<&str>,
+        limit: usize,
+    ) -> Result<Vec<Repository>> {
         // Bitbucket requires authentication for searching all repositories
         // Without auth, we can only search within a specific user's repos
-        if !mine_only && self.token.is_none() {
+        if !mine_only && owner.is_none() && self.token.is_none() {
             anyhow::bail!("Bitbucket requires authentication to search all repositories. Set BITBUCKET_TOKEN or use --mine flag.");
         }
 
-        let url = if mine_only || self.token.is_some() {
+        let url = if mine_only {
             let username = self.get_username().await?;
             format!(
                 "{}/repositories/{}?q=name~\"{}\"&pagelen={}",
                 self.base_url,
                 username,
+                urlencoding::encode(query),
+                limit
+            )
+        } else if let Some(owner) = owner {
+            format!(
+                "{}/repositories/{}?q=name~\"{}\"&pagelen={}",
+                self.base_url,
+                owner,
                 urlencoding::encode(query),
                 limit
             )
